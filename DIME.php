@@ -14,6 +14,7 @@
 // | license@php.net so we can mail you a copy immediately.               |
 // +----------------------------------------------------------------------+
 // | Authors: Shane Caraveo <shane@caraveo.com>                           |
+// | 		  Ralf Hofmann <ralf.hofmann@verdisoft.com>					  |
 // +----------------------------------------------------------------------+
 //
 // $Id$
@@ -28,8 +29,11 @@ require_once 'PEAR.php';
  *   This class enables you to manipulate and build
  *   a DIME encapsulated message.
  *
- * http://search.ietf.org/internet-drafts/draft-nielsen-dime-02.txt
+ * http://www.ietf.org/internet-drafts/draft-nielsen-dime-02.txt
  *
+ * 09/18/02 Ralf -  A huge number of changes to be compliant 
+ * 					with the DIME Specification Release 17 June 2002
+ * 
  * TODO: lots of stuff needs to be tested.
  *           Definitily have to go through DIME spec and
  *           make things work right, most importantly, sec 3.3
@@ -37,7 +41,8 @@ require_once 'PEAR.php';
  *
  * see test/dime_mesage_test.php for example of usage
  * 
- * @author  Shane Caraveo <shane@caraveo.com>
+ * @author  Shane Caraveo <shane@caraveo.com>, 
+ *          Ralf Hofmann <ralf.hofmann@verdisoft.com>	 
  * @version $Revision$
  * @package Net_DIME
  */
@@ -47,29 +52,52 @@ define('NET_DIME_TYPE_URI',0x02);
 define('NET_DIME_TYPE_UNKNOWN',0x03);
 define('NET_DIME_TYPE_NONE',0x04);
 
-define('NET_DIME_RECORD_HEADER',8);
+define('NET_DIME_VERSION',0x0001);
+
+define('NET_DIME_RECORD_HEADER',12);
+
+define('NET_DIME_FLAGS', 0);
+define('NET_DIME_OPTS_LEN', 1);
+define('NET_DIME_ID_LEN', 2);
+define('NET_DIME_TYPE_LEN', 3);
+define('NET_DIME_DATA_LEN', 4);
+define('NET_DIME_OPTS', 5);
+define('NET_DIME_ID', 6);
+define('NET_DIME_TYPE', 7);
+define('NET_DIME_DATA', 8);
 
 class Net_DIME_Record extends PEAR
 {
     // these are used to hold the padded length
+    var $OPTS_LENGTH = 0;
     var $ID_LENGTH = 0;
     var $TYPE_LENGTH = 0; 
     var $DATA_LENGTH = 0;
+    var $_haveOpts = FALSE;
     var $_haveID = FALSE;
     var $_haveType = FALSE;
     var $_haveData = FALSE;
     var $debug = FALSE;
     var $padstr = "\0";
     /**
-     * _record
-     * [0], 16 bits: $MB:$ME:$CF:$ID_LENGTH
-     * [1], 16 bits: $TNF:$TYPE_LENGTH, $TNF defaults to DIME_TYPE_NONE
-     * [2], 32 bits: $DATA_LENGTH
-     * [3], ID + PADDING
-     * [4], TYPE + PADDING
-     * [5], DATA + PADDING
+     * Elements
+     * [NET_DIME_FLAGS],    16 bits: VERSION:MB:ME:CF:TYPE_T
+     * [NET_DIME_OPTS_LEN], 16 bits: OPTIONS_LENGTH
+     * [NET_DIME_ID_LEN],   16 bits: ID_LENGTH
+     * [NET_DIME_TYPE_LEN], 16 bits: TYPE_LENGTH
+     * [NET_DIME_DATA_LEN], 32 bits: DATA_LENGTH
+	 * [NET_DIME_OPTS]             : OPTIONS
+	 * [NET_DIME_ID]     		   : ID
+	 * [NET_DIME_TYPE]             : TYPE
+	 * [NET_DIME_DATA]             : DATA
      */
-    var $_record = array(0,0x8000,0,'','','');
+    var $Elements = array(NET_DIME_FLAGS => 0,  NET_DIME_OPTS_LEN => 0, 
+	                      NET_DIME_ID_LEN => 0, NET_DIME_TYPE_LEN => 0, 
+     					  NET_DIME_DATA_LEN => 0,
+	 					  NET_DIME_OPTS => '',
+						  NET_DIME_ID => '',
+						  NET_DIME_TYPE => '',
+						  NET_DIME_DATA => '');
     
     function Net_DIME_Record($debug = FALSE)
     {
@@ -79,62 +107,62 @@ class Net_DIME_Record extends PEAR
 
     function setMB()
     {
-        $this->_record[0] |= 0x8000;
+        $this->Elements[NET_DIME_FLAGS] |= 0x0400;
     }
 
     function setME()
     {
-        $this->_record[0] |= 0x4000;
+        $this->Elements[NET_DIME_FLAGS] |= 0x0200;
     }
 
     function setCF()
     {
-        $this->_record[0] |= 0x2000;
+        $this->Elements[NET_DIME_FLAGS] |= 0x0100;
     }
 
     function isChunk()
     {
-        return $this->_record[0] & 0x2000;
+        return $this->Elements[NET_DIME_FLAGS] & 0x0100;
     }
 
     function isEnd()
     {
-        return $this->_record[0] & 0x4000;
+        return $this->Elements[NET_DIME_FLAGS] & 0x0200;
     }
     
     function isStart()
     {
-        return $this->_record[0] & 0x8000;
+        return $this->Elements[NET_DIME_FLAGS] & 0x0400;
     }
     
     function getID()
     {
-        return $this->_record[3];
+        return $this->Elements[NET_DIME_ID];
     }
 
     function getType()
     {
-        return $this->_record[4];
+        return $this->Elements[NET_DIME_TYPE];
     }
 
     function getData()
     {
-        return $this->_record[5];
+        return $this->Elements[NET_DIME_DATA];
     }
     
     function getDataLength()
     {
-        return $this->_record[2];
+        return $this->Elements[NET_DIME_DATA_LEN];
     }
     
     function setType($typestring, $type=NET_DIME_TYPE_UNKNOWN)
     {
-        $typelen = strlen($typestring) & 0x1FFF;
-        // XXX check for overflow of type length
-        $type = $type << 13;
-        $this->_record[1] = $type + $typelen;
+        $typelen = strlen($typestring) & 0xFFFF;
+        $type = $type << 4;
+        $this->Elements[NET_DIME_FLAGS] = ($this->Elements[NET_DIME_FLAGS] & 0xFF0F) | $type;
+        $this->Elements[NET_DIME_TYPE_LEN] = $typelen;
         $this->TYPE_LENGTH = $this->_getPadLength($typelen);
-        $this->_record[4] = $typestring;
+        $this->Elements[NET_DIME_TYPE] = $typestring;
     }
     
     function generateID()
@@ -146,125 +174,112 @@ class Net_DIME_Record extends PEAR
     
     function setID($id)
     {
-        $idlen = strlen($id) & 0x1FFF;
-        // XXX check for overflow error in idlen
-        $flags = $this->_record[0] & 0xE000;
-        $this->_record[0] = $flags + $idlen;
+        $idlen = strlen($id) & 0xFFFF;
+        $this->Elements[NET_DIME_ID_LEN] = $idlen;
         $this->ID_LENGTH = $this->_getPadLength($idlen);
-        $this->_record[3] = $id;
+        $this->Elements[NET_DIME_ID] = $id;
     }
     
     function setData($data, $size=0)
     {
         $datalen = $size?$size:strlen($data);
-        $this->_record[2] = $datalen;
+        $this->Elements[NET_DIME_DATA_LEN] = $datalen;
         $this->DATA_LENGTH = $this->_getPadLength($datalen);
-        $this->_record[5] = $data;
+        $this->Elements[NET_DIME_DATA] = $data;
     }
     
     function encode()
     {
-        // create the header
-        if ($this->debug) {
-            // this encoding is NOT DIME!
-            // it's just a bit easier to figure out problems with
-            $format =   "%04X%04X%08X".
-                        "%".$this->ID_LENGTH."s".
-                        "%".$this->TYPE_LENGTH."s".
-                        "%".$this->DATA_LENGTH."s";
-            return sprintf($format,
-                       ($this->_record[0]&0x0000FFFF),
-                       ($this->_record[1]&0x0000FFFF),
-                       $this->_record[2],
-                       str_pad($this->_record[3], $this->ID_LENGTH, $this->padstr),
-                       str_pad($this->_record[4], $this->TYPE_LENGTH, $this->padstr),
-                       str_pad($this->_record[5], $this->DATA_LENGTH, $this->padstr));
-        } else {
-            // the real dime encoding
-            $format =   '%c%c%c%c%c%c%c%c'.
-                        '%'.$this->ID_LENGTH.'s'.
-                        '%'.$this->TYPE_LENGTH.'s'.
-                        '%'.$this->DATA_LENGTH.'s';
-            return sprintf($format,
-                       ($this->_record[0]&0x0000FF00)>>8,
-                       ($this->_record[0]&0x000000FF),
-                       ($this->_record[1]&0x0000FF00)>>8,
-                       ($this->_record[1]&0x000000FF),
-                       ($this->_record[2]&0xFF000000)>>24,
-                       ($this->_record[2]&0x00FF0000)>>16,
-                       ($this->_record[2]&0x0000FF00)>>8,
-                       ($this->_record[2]&0x000000FF),
-                       str_pad($this->_record[3], $this->ID_LENGTH, $this->padstr),
-                       str_pad($this->_record[4], $this->TYPE_LENGTH, $this->padstr),
-                       str_pad($this->_record[5], $this->DATA_LENGTH, $this->padstr));
-        }
-        
+		// insert version 
+	    $this->Elements[NET_DIME_FLAGS] = ($this->Elements[NET_DIME_FLAGS] & 0x07FF) | (NET_DIME_VERSION << 11);
+
+        // the real dime encoding
+        $format =   '%c%c%c%c%c%c%c%c%c%c%c%c'.
+                    '%'.$this->OPTS_LENGTH.'s'.
+                    '%'.$this->ID_LENGTH.'s'.
+                    '%'.$this->TYPE_LENGTH.'s'.
+                    '%'.$this->DATA_LENGTH.'s';
+        return sprintf($format,
+	                   ($this->Elements[NET_DIME_FLAGS]&0x0000FF00)>>8,
+    	               ($this->Elements[NET_DIME_FLAGS]&0x000000FF),
+        	           ($this->Elements[NET_DIME_OPTS_LEN]&0x0000FF00)>>8,
+            	       ($this->Elements[NET_DIME_OPTS_LEN]&0x000000FF),
+        	           ($this->Elements[NET_DIME_ID_LEN]&0x0000FF00)>>8,
+            	       ($this->Elements[NET_DIME_ID_LEN]&0x000000FF),
+        	           ($this->Elements[NET_DIME_TYPE_LEN]&0x0000FF00)>>8,
+            	       ($this->Elements[NET_DIME_TYPE_LEN]&0x000000FF),
+                	   ($this->Elements[NET_DIME_DATA_LEN]&0xFF000000)>>24,
+	                   ($this->Elements[NET_DIME_DATA_LEN]&0x00FF0000)>>16,
+    	               ($this->Elements[NET_DIME_DATA_LEN]&0x0000FF00)>>8,
+        	           ($this->Elements[NET_DIME_DATA_LEN]&0x000000FF),
+            	       str_pad($this->Elements[NET_DIME_OPTS], $this->OPTS_LENGTH, $this->padstr),
+            	       str_pad($this->Elements[NET_DIME_ID], $this->ID_LENGTH, $this->padstr),
+                	   str_pad($this->Elements[NET_DIME_TYPE], $this->TYPE_LENGTH, $this->padstr),
+	                   str_pad($this->Elements[NET_DIME_DATA], $this->DATA_LENGTH, $this->padstr));
     }
     
     function _getPadLength($len)
     {
         $pad = 0;
         if ($len) {
-            $pad = $len % 32;
-            if ($pad) $pad = 32 - $pad;
+            $pad = $len % 4;
+            if ($pad) $pad = 4 - $pad;
         }
         return $len + $pad;
     }
     
     function decode(&$data)
     {
-        if ($this->debug) {
-            echo " data length is: ".strlen($data)."\n";
-            // debug decoding against our own format
-            $this->_record[0] = hexdec(substr($data,0,4));
-            $this->_record[1] = hexdec(substr($data,4,4));
-            $this->_record[2] = hexdec(substr($data,8,8));
-            $p = 16;
-        } else {
-            // REAL DIME decoding
-            $this->_record[0] = (hexdec(bin2hex($data[0]))<<8) + hexdec(bin2hex($data[1]));
-            $this->_record[1] = (hexdec(bin2hex($data[2]))<<8) + hexdec(bin2hex($data[3]));
-            $this->_record[2] = (hexdec(bin2hex($data[4]))<<24) +
-                                (hexdec(bin2hex($data[5]))<<16) +
-                                (hexdec(bin2hex($data[6]))<<8) +
-                                hexdec(bin2hex($data[7]));
-            $p = 8;
-        }
-        
-        $this->id_len = $this->_record[0] & 0x1FFF;
-        $this->ID_LENGTH = $this->_getPadLength($this->id_len);
-        $this->type_len = $this->_record[1] & 0x1FFF;
-        $this->TYPE_LENGTH = $this->_getPadLength($this->type_len);
-        $this->DATA_LENGTH = $this->_getPadLength($this->_record[2]);
-        
-        if ($this->debug) {
-            echo " idlen: $this->id_len bytes padded: $this->ID_LENGTH\n";
-            echo " typelen: $this->type_len bytes padded: $this->TYPE_LENGTH\n";
-            echo " datalen: {$this->_record[2]} bytes padded: $this->DATA_LENGTH\n";
-        }
-        
-        $datalen = strlen($data);
-        $this->_record[3] = substr($data,$p,$this->id_len);
-        $this->_haveID = (strlen($this->_record[3]) == $this->id_len);
-        if ($this->_haveID) {
-            $p += $this->ID_LENGTH;
-            $this->_record[4] = substr($data,$p,$this->type_len);
-            $this->_haveType = (strlen($this->_record[4]) == $this->type_len);
-            if ($this->_haveType) {
-                $p += $this->TYPE_LENGTH;
-                $this->_record[5] = substr($data,$p,$this->_record[2]);
-                $this->_haveData = (strlen($this->_record[5]) == $this->_record[2]);
-                if ($this->_haveData) {
-                    $p += $this->DATA_LENGTH;
-                } else {
-                    $p += strlen($this->_record[5]);
-                }
-            } else {
-                $p += strlen($this->_record[4]);
-            }
-        } else {
-            $p += strlen($this->_record[3]);
-        }
+        // REAL DIME decoding
+        $this->Elements[NET_DIME_FLAGS]    = (hexdec(bin2hex($data[0]))<<8) + hexdec(bin2hex($data[1]));
+        $this->Elements[NET_DIME_OPTS_LEN] = (hexdec(bin2hex($data[2]))<<8) + hexdec(bin2hex($data[3]));
+        $this->Elements[NET_DIME_ID_LEN]   = (hexdec(bin2hex($data[4]))<<8) + hexdec(bin2hex($data[5]));
+        $this->Elements[NET_DIME_TYPE_LEN] = (hexdec(bin2hex($data[6]))<<8) + hexdec(bin2hex($data[7]));
+        $this->Elements[NET_DIME_DATA_LEN] = (hexdec(bin2hex($data[8]))<<24) +
+		                             (hexdec(bin2hex($data[9]))<<16) +
+                                     (hexdec(bin2hex($data[10]))<<8) +
+                                      hexdec(bin2hex($data[11]));
+        $p = 12;
+		
+		$version = (($this->Elements[NET_DIME_FLAGS]>>11) & 0x001F);
+		
+		if ($version == NET_DIME_VERSION) 
+		{
+	        $this->OPTS_LENGTH = $this->_getPadLength($this->Elements[NET_DIME_OPTS_LEN]);        
+	        $this->ID_LENGTH = $this->_getPadLength($this->Elements[NET_DIME_ID_LEN]);
+	        $this->TYPE_LENGTH = $this->_getPadLength($this->Elements[NET_DIME_TYPE_LEN]);
+	        $this->DATA_LENGTH = $this->_getPadLength($this->Elements[NET_DIME_DATA_LEN]);
+	                
+	        $datalen = strlen($data);
+	        $this->Elements[NET_DIME_OPTS] = substr($data,$p,$this->Elements[NET_DIME_OPTS_LEN]);
+	        $this->_haveOpts = (strlen($this->Elements[NET_DIME_OPTS]) == $this->Elements[NET_DIME_OPTS_LEN]);
+	        if ($this->_haveOpts) {
+	            $p += $this->OPTS_LENGTH;		
+		        $this->Elements[NET_DIME_ID] = substr($data,$p,$this->Elements[NET_DIME_ID_LEN]);
+		        $this->_haveID = (strlen($this->Elements[NET_DIME_ID]) == $this->Elements[NET_DIME_ID_LEN]);
+		        if ($this->_haveID) {
+		            $p += $this->ID_LENGTH;
+		            $this->Elements[NET_DIME_TYPE] = substr($data,$p,$this->Elements[NET_DIME_TYPE_LEN]);
+		            $this->_haveType = (strlen($this->Elements[NET_DIME_TYPE]) == $this->Elements[NET_DIME_TYPE_LEN]);
+		            if ($this->_haveType) {
+		                $p += $this->TYPE_LENGTH;
+		                $this->Elements[NET_DIME_DATA] = substr($data,$p,$this->Elements[NET_DIME_DATA_LEN]);
+		                $this->_haveData = (strlen($this->Elements[NET_DIME_DATA]) == $this->Elements[NET_DIME_DATA_LEN]);
+		                if ($this->_haveData) {
+		                    $p += $this->DATA_LENGTH;
+		                } else {
+		                    $p += strlen($this->Elements[NET_DIME_DATA]);
+		                }
+		            } else {
+		                $p += strlen($this->Elements[NET_DIME_TYPE]);
+					}
+		        } else {
+		            $p += strlen($this->Elements[NET_DIME_ID]);
+				}
+		    } else {
+		    	$p += strlen($this->Elements[NET_DIME_OPTS]);					
+	        }
+		}
         return substr($data, $p);
     }
     
@@ -272,29 +287,36 @@ class Net_DIME_Record extends PEAR
     {
         $datalen = strlen($data);
         $p = 0;
+        if (!$this->_haveOpts) {
+            $have = strlen($this->Elements[NET_DIME_OPTS]);
+            $this->Elements[NET_DIME_OPTS] .= substr($data,$p,$this->Elements[NET_DIME_OPTS_LEN]-$have);
+            $this->_haveOpts = (strlen($this->Elements[NET_DIME_OPTS]) == $this->Elements[DIME_OTPS_LEN]);
+            if (!$this->_haveOpts) return NULL;
+            $p += $this->OPTS_LENGTH-$have;
+        }
         if (!$this->_haveID) {
-            $have = strlen($this->_record[3]);
-            $this->_record[3] .= substr($data,$p,$this->id_len-$have);
-            $this->_haveID = (strlen($this->_record[3]) == $this->id_len);
+            $have = strlen($this->Elements[NET_DIME_ID]);
+            $this->Elements[NET_DIME_ID] .= substr($data,$p,$this->Elements[NET_DIME_ID_LEN]-$have);
+            $this->_haveID = (strlen($this->Elements[NET_DIME_ID]) == $this->Elements[NET_DIME_ID_LEN]);
             if (!$this->_haveID) return NULL;
             $p += $this->ID_LENGTH-$have;
         }
         if (!$this->_haveType && $p < $datalen) {
-            $have = strlen($this->_record[4]);
-            $this->_record[4] .= substr($data,$p,$this->type_len-$have);
-            $this->_haveType = (strlen($this->_record[4]) == $this->type_len);
+            $have = strlen($this->Elements[NET_DIME_TYPE]);
+            $this->Elements[NET_DIME_TYPE] .= substr($data,$p,$this->Elements[NET_DIME_TYPE_LEN]-$have);
+            $this->_haveType = (strlen($this->Elements[NET_DIME_TYPE]) == $this->Elements[NET_DIME_TYPE_LEN]);
             if (!$this->_haveType) return NULL;
             $p += $this->TYPE_LENGTH-$have;
         }
         if (!$this->_haveData && $p < $datalen) {
-            $have = strlen($this->_record[5]);
-            $this->_record[5] .= substr($data,$p,$this->_record[2]-$have);
-            $this->_haveData = (strlen($this->_record[5]) == $this->_record[2]);
+            $have = strlen($this->Elements[NET_DIME_DATA]);
+            $this->Elements[NET_DIME_DATA] .= substr($data,$p,$this->Elements[NET_DIME_DATA_LEN]-$have);
+            $this->_haveData = (strlen($this->Elements[NET_DIME_DATA]) == $this->Elements[NET_DIME_DATA_LEN]);
             if (!$this->_haveData) return NULL;
             $p += $this->DATA_LENGTH-$have;
         }
         return substr($data,$p);
-    }
+    }   
 }
 
 
@@ -503,7 +525,7 @@ class Net_DIME_Message extends PEAR
     /**
      * _processData
      *
-     * creates DIME_Records from provided data
+     * creates Net_DIME_Records from provided data
      *
      */
     function _processData(&$data)
@@ -515,12 +537,8 @@ class Net_DIME_Message extends PEAR
         } else {
             $data = $this->_currentRecord->addData($data);
         }
+				
         if ($this->_currentRecord->_haveData) {
-            if ($this->debug) {
-                echo "  idlen: ".strlen($this->_currentRecord->_record[3])."\n";
-                echo "  typelen: ".strlen($this->_currentRecord->_record[4])."\n";
-                echo "  datalen: ".strlen($this->_currentRecord->_record[5])."\n";
-            }
             if (count($this->parts)==0 && !$this->_currentRecord->isStart()) {
                 // raise an error!
                 return PEAR::raiseError('First Message is not a DIME begin record!');
@@ -533,11 +551,7 @@ class Net_DIME_Message extends PEAR
             if ($this->currentPart < 0 && !$this->_currentRecord->isChunk()) {
                 $this->parts[] = array();
                 $this->currentPart = count($this->parts)-1;
-                $id = $this->_currentRecord->getID();
-                if ($id) {
-                    $this->parts[$id] = &$this->parts[$this->currentPart];
-                }
-                $this->parts[$this->currentPart]['id'] = $id;
+                $this->parts[$this->currentPart]['id']   = $this->_currentRecord->getID();
                 $this->parts[$this->currentPart]['type'] = $this->_currentRecord->getType();
                 $this->parts[$this->currentPart]['data'] = $this->_currentRecord->getData();
                 $this->currentPart = -1;
@@ -545,11 +559,7 @@ class Net_DIME_Message extends PEAR
                 if ($this->currentPart < 0) {
                     $this->parts[] = array();
                     $this->currentPart = count($this->parts)-1;
-                    $id = $this->_currentRecord->getID();
-                    if ($id) {
-                        $this->parts[$id] = &$this->parts[$this->currentPart];
-                    }
-                    $this->parts[$this->currentPart]['id'] = $id;
+                    $this->parts[$this->currentPart]['id']   = $this->_currentRecord->getID();
                     $this->parts[$this->currentPart]['type'] = $this->_currentRecord->getType();
                     $this->parts[$this->currentPart]['data'] = $this->_currentRecord->getData();
                 } else {
