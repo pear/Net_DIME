@@ -330,7 +330,7 @@ class DIME_Message extends PEAR
         $this->debug = $debug;
     }
     
-    function _sendRecord(&$data, $typestr='', $id=NULL, $type=DIME_TYPE_UNKNOWN)
+    function _makeRecord(&$data, $typestr='', $id=NULL, $type=DIME_TYPE_UNKNOWN)
     {
         $record = new DIME_Record($this->debug);
         if ($this->mb) {
@@ -346,7 +346,7 @@ class DIME_Message extends PEAR
         #if ($this->debug) {
         #    print str_replace('\0','*',$record->encode());
         #}
-        return fwrite($this->stream, $record->encode());
+        return $record->encode();
     }
     
     function startChunk(&$data, $typestr='', $id=NULL, $type=DIME_TYPE_UNKNOWN)
@@ -360,36 +360,38 @@ class DIME_Message extends PEAR
         } else {
             $this->id = md5(time());
         }
-        $this->_sendRecord($data, $this->typestr, $this->id, $this->type);
+        return $this->_makeRecord($data, $this->typestr, $this->id, $this->type);
     }
 
     function doChunk(&$data)
     {
         $this->me = 0;
         $this->cf = 1;
-        $this->_sendRecord($data, NULL, NULL, DIME_TYPE_UNCHANGED);
+        return $this->_makeRecord($data, NULL, NULL, DIME_TYPE_UNCHANGED);
     }
 
     function endChunk()
     {
         $this->cf = 0;
         $data = NULL;
-        $this->_sendRecord($data, NULL, NULL, DIME_TYPE_UNCHANGED);
+        $rec = $this->_makeRecord($data, NULL, NULL, DIME_TYPE_UNCHANGED);
         $this->id = 0;
         $this->cf = 0;
         $this->id = 0;
         $this->type = DIME_TYPE_UNKNOWN;
         $this->typestr = NULL;
+        return $rec;
     }
     
     function endMessage()
     {
         $this->me = 1;
         $data = NULL;
-        $this->_sendRecord($data, NULL, NULL, DIME_TYPE_NONE);
+        $rec = $this->_makeRecord($data, NULL, NULL, DIME_TYPE_NONE);
         $this->me = 0;
         $this->mb = 1;
         $this->id = 0;
+        return $rec;
     }
     
     /**
@@ -405,16 +407,26 @@ class DIME_Message extends PEAR
         if ($len > $this->record_size) {
             $chunk = substr($data, 0, $this->record_size);
             $p = $this->record_size;
-            $this->startChunk($chunk,$typestr,$id,$type);
+            $rec = $this->startChunk($chunk,$typestr,$id,$type);
+            fwrite($this->stream, $rec);
             while ($p < $len) {
                 $chunk = substr($data, $p, $this->record_size);
                 $p += $this->record_size;
-                $this->doChunk($chunk);
+                $rec = $this->doChunk($chunk);
+                fwrite($this->stream, $rec);
             }
-            $this->endChunk();
+            $rec = $this->endChunk();
+            fwrite($this->stream, $rec);
             return;
         }
-        $this->_sendRecord($data, $typestr,$id,$type);
+        $rec = $this->_makeRecord($data, $typestr,$id,$type);
+        fwrite($this->stream, $rec);
+    }
+    
+    function sendEndMessage()
+    {
+        $rec = $this->endMessage();
+        fwrite($this->stream, $rec);
     }
     
     /**
@@ -439,6 +451,55 @@ class DIME_Message extends PEAR
         }
     }
 
+    /**
+     * encodeData
+     *
+     * given data, encode it in DIME
+     *
+     */
+    function encodeData($data, $typestr='', $id=NULL, $type=DIME_TYPE_UNKNOWN)
+    {
+        $len = strlen($data);
+        $resp = '';
+        if ($len > $this->record_size) {
+            $chunk = substr($data, 0, $this->record_size);
+            $p = $this->record_size;
+            $resp .= $this->startChunk($chunk,$typestr,$id,$type);
+            while ($p < $len) {
+                $chunk = substr($data, $p, $this->record_size);
+                $p += $this->record_size;
+                $resp .= $this->doChunk($chunk);
+            }
+            $resp .= $this->endChunk();
+        } else {
+            $resp .= $this->_makeRecord($data, $typestr,$id,$type);
+        }
+        return $resp;
+    }
+
+    /**
+     * sendFile
+     *
+     * given a filename, it reads the file,
+     * creates records and writes them to the stream
+     *
+     */
+    function encodeFile($filename, $typestr='', $id=NULL, $type=DIME_TYPE_UNKNOWN)
+    {
+        $f = fopen($filename, "rb");
+        if ($f) {
+            if ($data = fread($f, $this->record_size)) {
+                $resp = $this->startChunk($data,$typestr,$id,$type);
+            }
+            while ($data = fread($f, $this->record_size)) {
+                $resp = $this->doChunk($data,$typestr,$id,$type);
+            }
+            $resp = $this->endChunk();
+            fclose($f);
+        }
+        return $resp;
+    }
+    
     /**
      * _processData
      *

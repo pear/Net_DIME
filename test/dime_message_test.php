@@ -1,5 +1,5 @@
 <?php
-include 'SOAP/DIME.php';
+include 'Net/DIME.php';
 
 $test='--=_a2cbb051424cc43e72d3c8c8d0b8f70e
 Content-Type: text/xml; charset="UTF-8"
@@ -551,7 +551,7 @@ $f = fopen('/tmp/dime.data','wb+');
 $dime = new DIME_Message($f,4096,$debug);
 $dime->sendData($test);
 #$dime->sendData($test);
-$dime->endMessage();
+$dime->sendEndMessage();
 $size = ftell($f);
 print "filesize: $size, datasize: ".strlen($test)."\n";
 rewind($f);

@@ -1,5 +1,5 @@
 <?php
-include 'SOAP/DIME.php';
+include 'Net/DIME.php';
 
 $test='--=_a2cbb051424cc43e72d3c8c8d0b8f70e
 Content-Type: text/xml; charset="UTF-8"
