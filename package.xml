@@ -22,10 +22,10 @@
 
   <release>
     <state>beta</state>
-    <version>0.2.1</version>
+    <version>0.3</version>
     <date>2002-07-07</date>
     <notes>
-      Change names from DIME_* to Net_DIME_*.
+      Updated support for the DIME spec from 17 June 2002
     </notes>
     <filelist>
       <dir name="/" baseinstalldir="Net">
@@ -40,6 +40,14 @@
   <changelog>
       <release>
         <state>beta</state>
+        <version>0.2.1</version>
+        <date>2002-05-12</date>
+        <notes>
+          Change names from DIME_* to Net_DIME_*.
+        </notes>
+      </release>
+      <release>
+        <state>beta</state>
         <version>0.2</version>
         <date>2002-05-12</date>
         <notes>
@@ -47,15 +55,6 @@
           This needs to be integrated with streams, if there is anything needed to do that.
           More testing needs to be done, but it encodes/decodes it's own messages.
         </notes>
-        <filelist>
-          <dir name="/" baseinstalldir="Net">
-            <file role="php">DIME.php</file>
-              <dir name="test" role="test"> 
-                <file role="test" name="dime_message_test.php"/>
-                <file role="test" name="dime_record_test.php"/>
-              </dir>
-          </dir>
-        </filelist>
       </release>
   </changelog>
 </package>
