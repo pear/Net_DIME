@@ -5,6 +5,11 @@
 <package version="1.0">
   <name>Net_DIME</name>
   <summary>The PEAR::Net_DIME class implements DIME encoding</summary>
+  <description>
+      This is the initial independent release of the Net_DIME package.
+      Provides an implementation of DIME as defined at
+      http://search.ietf.org/internet-drafts/draft-nielsen-dime-01.txt
+  </description>
   <maintainers>
     <maintainer>
       <user>shane</user>
@@ -12,11 +17,12 @@
       <email>shane@caraveo.com</email>
     </maintainer>
   </maintainers>
+  <license>PHP License</license>
   <release>
-    <version>0.1</version>
+    <state>beta</state>
+    <version>0.2</version>
     <date>2002-05-12</date>
     <notes>
-      This is the initial independent release of the Net_DIME package.
       Some of the code probably needs to be PEAR-ified a bit more.
       This needs to be integrated with streams, if there is anything needed to do that.
       More testing needs to be done, but it encodes/decodes it's own messages.
