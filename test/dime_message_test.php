@@ -560,11 +560,12 @@ $dime = new DIME_Message($f,4096,$debug);
 $err = $dime->read();
 if (PEAR::isError($err)) {
     print $err->getMessage()."\n";
-}
-if (strcmp($dime->parts[0]['data'],$test)==0) {
-    echo "encode/decode success\n";
 } else {
-    echo "encode/decode failure\n";
+    if (strcmp($dime->parts[0]['data'],$test)==0) {
+        echo "encode/decode success\n";
+    } else {
+        echo "encode/decode failure\n";
+    }
 }
 
 ?>

@@ -148,7 +148,7 @@ class DIME_Record extends PEAR
     {
         $idlen = strlen($id) & 0x1FFF;
         // XXX check for overflow error in idlen
-        $flags = $this->_record[0] & 0x7000;
+        $flags = $this->_record[0] & 0xE000;
         $this->_record[0] = $flags + $idlen;
         $this->ID_LENGTH = $this->_getPadLength($idlen);
         $this->_record[3] = $id;
@@ -323,7 +323,7 @@ class DIME_Message extends PEAR
      *
      * TODO: integrate with the php streams stuff
      */
-    function DIME_Message($stream, $record_size = 4096, $debug = FALSE)
+    function DIME_Message($stream=NULL, $record_size = 4096, $debug = FALSE)
     {
         $this->stream = $stream;
         $this->record_size = $record_size;
@@ -342,7 +342,7 @@ class DIME_Message extends PEAR
         if ($this->cf) $record->setCF();
         $record->setData($data);
         $record->setType($typestr,$type);
-
+        if ($id) $record->setID($id);
         #if ($this->debug) {
         #    print str_replace('\0','*',$record->encode());
         #}
@@ -533,7 +533,11 @@ class DIME_Message extends PEAR
             if ($this->currentPart < 0 && !$this->_currentRecord->isChunk()) {
                 $this->parts[] = array();
                 $this->currentPart = count($this->parts)-1;
-                $this->parts[$this->currentPart]['id'] = $this->_currentRecord->getID();
+                $id = $this->_currentRecord->getID();
+                if ($id) {
+                    $this->parts[$id] = &$this->parts[$this->currentPart];
+                }
+                $this->parts[$this->currentPart]['id'] = $id;
                 $this->parts[$this->currentPart]['type'] = $this->_currentRecord->getType();
                 $this->parts[$this->currentPart]['data'] = $this->_currentRecord->getData();
                 $this->currentPart = -1;
@@ -541,7 +545,11 @@ class DIME_Message extends PEAR
                 if ($this->currentPart < 0) {
                     $this->parts[] = array();
                     $this->currentPart = count($this->parts)-1;
-                    $this->parts[$this->currentPart]['id'] = $this->_currentRecord->getID();
+                    $id = $this->_currentRecord->getID();
+                    if ($id) {
+                        $this->parts[$id] = &$this->parts[$this->currentPart];
+                    }
+                    $this->parts[$this->currentPart]['id'] = $id;
                     $this->parts[$this->currentPart]['type'] = $this->_currentRecord->getType();
                     $this->parts[$this->currentPart]['data'] = $this->_currentRecord->getData();
                 } else {
