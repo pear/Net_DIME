@@ -548,7 +548,7 @@ Ow0KI3ByaW50X3IoJHJlc3ApOw0KcHJpbnQgJGNsaWVudC0+d2lyZTsNCj8+
 $debug = FALSE;
 $data = NULL;
 $f = fopen('/tmp/dime.data','wb+');
-$dime = new DIME_Message($f,4096,$debug);
+$dime = new Net_DIME_Message($f,4096,$debug);
 $dime->sendData($test);
 #$dime->sendData($test);
 $dime->sendEndMessage();
@@ -556,7 +556,7 @@ $size = ftell($f);
 print "filesize: $size, datasize: ".strlen($test)."\n";
 rewind($f);
 
-$dime = new DIME_Message($f,4096,$debug);
+$dime = new Net_DIME_Message($f,4096,$debug);
 $err = $dime->read();
 if (PEAR::isError($err)) {
     print $err->getMessage()."\n";

@@ -28,7 +28,7 @@ require_once 'PEAR.php';
  *   This class enables you to manipulate and build
  *   a DIME encapsulated message.
  *
- * http://search.ietf.org/internet-drafts/draft-nielsen-dime-01.txt
+ * http://search.ietf.org/internet-drafts/draft-nielsen-dime-02.txt
  *
  * TODO: lots of stuff needs to be tested.
  *           Definitily have to go through DIME spec and
@@ -41,15 +41,15 @@ require_once 'PEAR.php';
  * @version $Revision$
  * @package Net_DIME
  */
-define('DIME_TYPE_UNCHANGED',0x00);
-define('DIME_TYPE_MEDIA',0x01);
-define('DIME_TYPE_URI',0x02);
-define('DIME_TYPE_UNKNOWN',0x03);
-define('DIME_TYPE_NONE',0x04);
+define('NET_DIME_TYPE_UNCHANGED',0x00);
+define('NET_DIME_TYPE_MEDIA',0x01);
+define('NET_DIME_TYPE_URI',0x02);
+define('NET_DIME_TYPE_UNKNOWN',0x03);
+define('NET_DIME_TYPE_NONE',0x04);
 
-define('DIME_RECORD_HEADER',8);
+define('NET_DIME_RECORD_HEADER',8);
 
-class DIME_Record extends PEAR
+class Net_DIME_Record extends PEAR
 {
     // these are used to hold the padded length
     var $ID_LENGTH = 0;
@@ -71,7 +71,7 @@ class DIME_Record extends PEAR
      */
     var $_record = array(0,0x8000,0,'','','');
     
-    function DIME_Record($debug = FALSE)
+    function Net_DIME_Record($debug = FALSE)
     {
         $this->debug = $debug;
         if ($debug) $this->padstr = '*';
@@ -127,7 +127,7 @@ class DIME_Record extends PEAR
         return $this->_record[2];
     }
     
-    function setType($typestring, $type=DIME_TYPE_UNKNOWN)
+    function setType($typestring, $type=NET_DIME_TYPE_UNKNOWN)
     {
         $typelen = strlen($typestring) & 0x1FFF;
         // XXX check for overflow of type length
@@ -298,7 +298,7 @@ class DIME_Record extends PEAR
 }
 
 
-class DIME_Message extends PEAR
+class Net_DIME_Message extends PEAR
 {
 
     var $record_size = 4096;
@@ -323,16 +323,16 @@ class DIME_Message extends PEAR
      *
      * TODO: integrate with the php streams stuff
      */
-    function DIME_Message($stream=NULL, $record_size = 4096, $debug = FALSE)
+    function Net_DIME_Message($stream=NULL, $record_size = 4096, $debug = FALSE)
     {
         $this->stream = $stream;
         $this->record_size = $record_size;
         $this->debug = $debug;
     }
     
-    function _makeRecord(&$data, $typestr='', $id=NULL, $type=DIME_TYPE_UNKNOWN)
+    function _makeRecord(&$data, $typestr='', $id=NULL, $type=NET_DIME_TYPE_UNKNOWN)
     {
-        $record = new DIME_Record($this->debug);
+        $record = new Net_DIME_Record($this->debug);
         if ($this->mb) {
             $record->setMB();
             // all subsequent records are not message begin!
@@ -349,7 +349,7 @@ class DIME_Message extends PEAR
         return $record->encode();
     }
     
-    function startChunk(&$data, $typestr='', $id=NULL, $type=DIME_TYPE_UNKNOWN)
+    function startChunk(&$data, $typestr='', $id=NULL, $type=NET_DIME_TYPE_UNKNOWN)
     {
         $this->me = 0;
         $this->cf = 1;
@@ -367,18 +367,18 @@ class DIME_Message extends PEAR
     {
         $this->me = 0;
         $this->cf = 1;
-        return $this->_makeRecord($data, NULL, NULL, DIME_TYPE_UNCHANGED);
+        return $this->_makeRecord($data, NULL, NULL, NET_DIME_TYPE_UNCHANGED);
     }
 
     function endChunk()
     {
         $this->cf = 0;
         $data = NULL;
-        $rec = $this->_makeRecord($data, NULL, NULL, DIME_TYPE_UNCHANGED);
+        $rec = $this->_makeRecord($data, NULL, NULL, NET_DIME_TYPE_UNCHANGED);
         $this->id = 0;
         $this->cf = 0;
         $this->id = 0;
-        $this->type = DIME_TYPE_UNKNOWN;
+        $this->type = NET_DIME_TYPE_UNKNOWN;
         $this->typestr = NULL;
         return $rec;
     }
@@ -387,7 +387,7 @@ class DIME_Message extends PEAR
     {
         $this->me = 1;
         $data = NULL;
-        $rec = $this->_makeRecord($data, NULL, NULL, DIME_TYPE_NONE);
+        $rec = $this->_makeRecord($data, NULL, NULL, NET_DIME_TYPE_NONE);
         $this->me = 0;
         $this->mb = 1;
         $this->id = 0;
@@ -401,7 +401,7 @@ class DIME_Message extends PEAR
      * and writes them to the stream
      *
      */
-    function sendData(&$data, $typestr='', $id=NULL, $type=DIME_TYPE_UNKNOWN)
+    function sendData(&$data, $typestr='', $id=NULL, $type=NET_DIME_TYPE_UNKNOWN)
     {
         $len = strlen($data);
         if ($len > $this->record_size) {
@@ -436,7 +436,7 @@ class DIME_Message extends PEAR
      * creates records and writes them to the stream
      *
      */
-    function sendFile($filename, $typestr='', $id=NULL, $type=DIME_TYPE_UNKNOWN)
+    function sendFile($filename, $typestr='', $id=NULL, $type=NET_DIME_TYPE_UNKNOWN)
     {
         $f = fopen($filename, "rb");
         if ($f) {
@@ -457,7 +457,7 @@ class DIME_Message extends PEAR
      * given data, encode it in DIME
      *
      */
-    function encodeData($data, $typestr='', $id=NULL, $type=DIME_TYPE_UNKNOWN)
+    function encodeData($data, $typestr='', $id=NULL, $type=NET_DIME_TYPE_UNKNOWN)
     {
         $len = strlen($data);
         $resp = '';
@@ -484,7 +484,7 @@ class DIME_Message extends PEAR
      * creates records and writes them to the stream
      *
      */
-    function encodeFile($filename, $typestr='', $id=NULL, $type=DIME_TYPE_UNKNOWN)
+    function encodeFile($filename, $typestr='', $id=NULL, $type=NET_DIME_TYPE_UNKNOWN)
     {
         $f = fopen($filename, "rb");
         if ($f) {
@@ -510,7 +510,7 @@ class DIME_Message extends PEAR
     {
         $leftover = NULL;
         if (!$this->_currentRecord) {
-            $this->_currentRecord = new DIME_Record($this->debug);
+            $this->_currentRecord = new Net_DIME_Record($this->debug);
             $data = $this->_currentRecord->decode($data);
         } else {
             $data = $this->_currentRecord->addData($data);
@@ -573,7 +573,7 @@ class DIME_Message extends PEAR
      *
      */
     function decodeData(&$data) {
-        while (strlen($data) >= DIME_RECORD_HEADER) {
+        while (strlen($data) >= NET_DIME_RECORD_HEADER) {
             $err = $this->_processData($data);
             if (PEAR::isError($err)) {
                 return $err;
@@ -607,7 +607,7 @@ class DIME_Message extends PEAR
             }
             
             // store any leftover data to be used again
-            // should be < DIME_RECORD_HEADER bytes
+            // should be < NET_DIME_RECORD_HEADER bytes
             $buf = $data;
         }
         if (!$this->_currentRecord || !$this->_currentRecord->isEnd()) {

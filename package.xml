@@ -8,24 +8,24 @@
   <description>
       This is the initial independent release of the Net_DIME package.
       Provides an implementation of DIME as defined at
-      http://search.ietf.org/internet-drafts/draft-nielsen-dime-01.txt
+      http://search.ietf.org/internet-drafts/draft-nielsen-dime-02.txt
   </description>
   <maintainers>
     <maintainer>
       <user>shane</user>
       <name>Shane Caraveo</name>
       <email>shane@caraveo.com</email>
+      <role>lead</role>
     </maintainer>
   </maintainers>
   <license>PHP License</license>
+
   <release>
     <state>beta</state>
-    <version>0.2</version>
-    <date>2002-05-12</date>
+    <version>0.2.1</version>
+    <date>2002-07-07</date>
     <notes>
-      Some of the code probably needs to be PEAR-ified a bit more.
-      This needs to be integrated with streams, if there is anything needed to do that.
-      More testing needs to be done, but it encodes/decodes it's own messages.
+      Change names from DIME_* to Net_DIME_*.
     </notes>
     <filelist>
       <dir name="/" baseinstalldir="Net">
@@ -37,4 +37,25 @@
       </dir>
     </filelist>
   </release>
+  <changelog>
+      <release>
+        <state>beta</state>
+        <version>0.2</version>
+        <date>2002-05-12</date>
+        <notes>
+          Some of the code probably needs to be PEAR-ified a bit more.
+          This needs to be integrated with streams, if there is anything needed to do that.
+          More testing needs to be done, but it encodes/decodes it's own messages.
+        </notes>
+        <filelist>
+          <dir name="/" baseinstalldir="Net">
+            <file role="php">DIME.php</file>
+              <dir name="test" role="test"> 
+                <file role="test" name="dime_message_test.php"/>
+                <file role="test" name="dime_record_test.php"/>
+              </dir>
+          </dir>
+        </filelist>
+      </release>
+  </changelog>
 </package>

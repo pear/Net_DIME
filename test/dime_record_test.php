@@ -38,7 +38,7 @@ Ow0KI3ByaW50X3IoJHJlc3ApOw0KcHJpbnQgJGNsaWVudC0+d2lyZTsNCj8+
 ';
 
 $data = NULL;
-$dime = new DIME_Record($data);
+$dime = new Net_DIME_Record($data);
 #$dime->setMB();
 $dime->generateID();
 $dime->setType('text/plain');
