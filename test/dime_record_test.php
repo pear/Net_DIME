@@ -43,10 +43,10 @@ $dime = new Net_DIME_Record($data);
 $dime->generateID();
 $dime->setType('text/plain');
 $dime->setData($test);
-print_r($dime->_record);
+print_r($dime->Elements);
 $enc = $dime->encode();
 print bin2hex(substr($enc,0,8))."\n";
 print chunk_split(bin2hex(substr($enc,8)),72)."\n";
 $dime->decode($enc);
-print_r($dime->_record);
+print_r($dime->Elements);
 ?>
