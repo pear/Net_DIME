@@ -1,16 +1,19 @@
 <?xml version="1.0" encoding="ISO-8859-1" ?>
 <!DOCTYPE package SYSTEM "http://pear.php.net/dtd/package-1.0">
-<!-- do not use the "Type" attribute here, that one is only for
-     generated package.xml files -->
 <package version="1.0">
   <name>Net_DIME</name>
-  <summary>The PEAR::Net_DIME class implements DIME encoding</summary>
+  <summary>The Net_DIME package implements DIME encoding</summary>
   <description>
-      This is the initial independent release of the Net_DIME package.
-      Provides an implementation of DIME as defined at
+      The Net_DIME package provides an implementation of DIME as defined at
       http://search.ietf.org/internet-drafts/draft-nielsen-dime-02.txt
   </description>
   <maintainers>
+    <maintainer>
+      <user>yunosh</user>
+      <name>Jan Schneider</name>
+      <email>jan@horde.org</email>
+      <role>lead</role>
+    </maintainer>
     <maintainer>
       <user>shane</user>
       <name>Shane Caraveo</name>
@@ -22,10 +25,10 @@
 
   <release>
     <state>beta</state>
-    <version>0.3</version>
-    <date>2002-07-07</date>
+    <version>1.0.0RC1</version>
+    <date>2007-01-22</date>
     <notes>
-      Updated support for the DIME spec from 17 June 2002
+      Fixed a constant name typo (Aaron Nixon, Bug #5537).
     </notes>
     <filelist>
       <dir name="/" baseinstalldir="Net">
@@ -37,24 +40,33 @@
       </dir>
     </filelist>
   </release>
+
   <changelog>
-      <release>
-        <state>beta</state>
-        <version>0.2.1</version>
-        <date>2002-05-12</date>
-        <notes>
-          Change names from DIME_* to Net_DIME_*.
-        </notes>
-      </release>
-      <release>
-        <state>beta</state>
-        <version>0.2</version>
-        <date>2002-05-12</date>
-        <notes>
-          Some of the code probably needs to be PEAR-ified a bit more.
-          This needs to be integrated with streams, if there is anything needed to do that.
-          More testing needs to be done, but it encodes/decodes it's own messages.
-        </notes>
-      </release>
+    <release>
+      <state>beta</state>
+      <version>0.3</version>
+      <date>2002-07-07</date>
+      <notes>
+        Updated support for the DIME spec from 17 June 2002
+      </notes>
+    </release>
+    <release>
+      <state>beta</state>
+      <version>0.2.1</version>
+      <date>2002-05-12</date>
+      <notes>
+        Change names from DIME_* to Net_DIME_*.
+      </notes>
+    </release>
+    <release>
+      <state>beta</state>
+      <version>0.2</version>
+      <date>2002-05-12</date>
+      <notes>
+        Some of the code probably needs to be PEAR-ified a bit more.
+        This needs to be integrated with streams, if there is anything needed to do that.
+        More testing needs to be done, but it encodes/decodes it's own messages.
+      </notes>
+    </release>
   </changelog>
 </package>

@@ -290,7 +290,7 @@ class Net_DIME_Record extends PEAR
         if (!$this->_haveOpts) {
             $have = strlen($this->Elements[NET_DIME_OPTS]);
             $this->Elements[NET_DIME_OPTS] .= substr($data,$p,$this->Elements[NET_DIME_OPTS_LEN]-$have);
-            $this->_haveOpts = (strlen($this->Elements[NET_DIME_OPTS]) == $this->Elements[DIME_OTPS_LEN]);
+            $this->_haveOpts = (strlen($this->Elements[NET_DIME_OPTS]) == $this->Elements[NET_DIME_OTPS_LEN]);
             if (!$this->_haveOpts) return NULL;
             $p += $this->OPTS_LENGTH-$have;
         }
