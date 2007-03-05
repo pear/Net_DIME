@@ -1,5 +1,9 @@
 <?php
-include 'Net/DIME.php';
+/**
+ * @package Net_DIME
+ */
+
+require 'Net/DIME.php';
 
 $test='--=_a2cbb051424cc43e72d3c8c8d0b8f70e
 Content-Type: text/xml; charset="UTF-8"
@@ -37,16 +41,13 @@ Ow0KI3ByaW50X3IoJHJlc3ApOw0KcHJpbnQgJGNsaWVudC0+d2lyZTsNCj8+
 --=_a2cbb051424cc43e72d3c8c8d0b8f70e--
 ';
 
-$data = NULL;
-$dime = new Net_DIME_Record($data);
-#$dime->setMB();
+$dime = new Net_DIME_Record();
 $dime->generateID();
 $dime->setType('text/plain');
 $dime->setData($test);
 print_r($dime->Elements);
 $enc = $dime->encode();
-print bin2hex(substr($enc,0,8))."\n";
-print chunk_split(bin2hex(substr($enc,8)),72)."\n";
+echo bin2hex(substr($enc, 0, 8)) . "\n";
+echo chunk_split(bin2hex(substr($enc, 8)), 72) . "\n";
 $dime->decode($enc);
 print_r($dime->Elements);
-?>

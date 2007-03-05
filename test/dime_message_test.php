@@ -1,5 +1,9 @@
 <?php
-include 'Net/DIME.php';
+/**
+ * @package Net_DIME
+ */
+
+require 'Net/DIME.php';
 
 $test='--=_a2cbb051424cc43e72d3c8c8d0b8f70e
 Content-Type: text/xml; charset="UTF-8"
@@ -545,27 +549,23 @@ KTsNCiRyZXNwID0gJGNsaWVudC0+Y2FsbCgnZWNob01pbWVBdHRhY2htZW50JyxhcnJheSgkdikp
 Ow0KI3ByaW50X3IoJHJlc3ApOw0KcHJpbnQgJGNsaWVudC0+d2lyZTsNCj8+
 --=_a2cbb051424cc43e72d3c8c8d0b8f70e--
 ';
-$debug = FALSE;
-$data = NULL;
-$f = fopen('/tmp/dime.data','wb+');
-$dime = new Net_DIME_Message($f,4096,$debug);
+
+$f = fopen('/tmp/dime.data', 'wb+');
+$dime = new Net_DIME_Message($f);
 $dime->sendData($test);
-#$dime->sendData($test);
 $dime->sendEndMessage();
 $size = ftell($f);
-print "filesize: $size, datasize: ".strlen($test)."\n";
+print "filesize: $size, datasize: " . strlen($test) . "\n";
 rewind($f);
 
-$dime = new Net_DIME_Message($f,4096,$debug);
+$dime = new Net_DIME_Message($f);
 $err = $dime->read();
 if (PEAR::isError($err)) {
-    print $err->getMessage()."\n";
+    echo $err->getMessage() . "\n";
 } else {
-    if (strcmp($dime->parts[0]['data'],$test)==0) {
+    if (strcmp($dime->parts[0]['data'], $test) == 0) {
         echo "encode/decode success\n";
     } else {
         echo "encode/decode failure\n";
     }
 }
-
-?>
