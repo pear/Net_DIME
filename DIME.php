@@ -18,8 +18,8 @@
  * @author     Jan Schneider <jan@horde.org>
  * @copyright  2002-2007 The PHP Group
  * @license    http://www.php.net/license/3_01.txt  PHP License 3.01
- * @version    CVS: $Id$
  * @link       http://pear.php.net/package/Net_DIME
+ * @example    test/dime_record_test.php For example of usage.
  */
 
 /** PEAR */
@@ -46,9 +46,7 @@ define('NET_DIME_TYPE', 7);
 define('NET_DIME_DATA', 8);
 
 /**
- * Class for DIME encoding and decoding.
- *
- * This class enables you to manipulate and build a DIME encapsulated message.
+ * Net_DIME_Record encodes and decodes single DIME records.
  *
  * @category   Networking
  * @package    Net_DIME
@@ -57,16 +55,15 @@ define('NET_DIME_DATA', 8);
  * @author     Jan Schneider <jan@horde.org>
  * @copyright  2002-2007 The PHP Group
  * @license    http://www.php.net/license/3_01.txt  PHP License 3.01
- * @version    Release: @package_version@
+ * @see        Net_DIME_Message
  * @link       http://pear.php.net/package/Net_DIME
  * @link       http://www.ietf.org/internet-drafts/draft-nielsen-dime-02.txt
- * @example    test/dime_mesage_test.php For example of usage.
  * @todo       - Lots of stuff needs to be tested.
  *             - Definitily have to go through DIME spec and make things work
  *               right, most importantly, sec 3.3.
  *             - Make examples, document.
  */
-class Net_DIME_Record extends PEAR {
+class Net_DIME_Record {
 
     // these are used to hold the padded length
     var $OPTS_LENGTH = 0;
@@ -232,7 +229,7 @@ class Net_DIME_Record extends PEAR {
         return $len + $pad;
     }
 
-    function decode(&$data)
+    function decode($data)
     {
         // Real DIME decoding.
         $this->Elements[NET_DIME_FLAGS]    = (hexdec(bin2hex($data[0])) << 8)
@@ -290,7 +287,7 @@ class Net_DIME_Record extends PEAR {
         return substr($data, $p);
     }
 
-    function addData(&$data)
+    function addData($data)
     {
         $datalen = strlen($data);
         $p = 0;
@@ -334,8 +331,27 @@ class Net_DIME_Record extends PEAR {
     }
 }
 
-
-class Net_DIME_Message extends PEAR {
+/**
+ * Net_DIME_Message enables you to manipulate and build a DIME encapsulated
+ * message.
+ *
+ * @category   Networking
+ * @package    Net_DIME
+ * @author     Shane Caraveo <shane@caraveo.com>
+ * @author     Ralf Hofmann <ralf.hofmann@verdisoft.com>
+ * @author     Jan Schneider <jan@horde.org>
+ * @copyright  2002-2007 The PHP Group
+ * @license    http://www.php.net/license/3_01.txt  PHP License 3.01
+ * @see        Net_DIME_Message
+ * @link       http://pear.php.net/package/Net_DIME
+ * @link       http://www.ietf.org/internet-drafts/draft-nielsen-dime-02.txt
+ * @example    test/dime_message_test.php For example of usage.
+ * @todo       - Lots of stuff needs to be tested.
+ *             - Definitily have to go through DIME spec and make things work
+ *               right, most importantly, sec 3.3.
+ *             - Make examples, document.
+ */
+class Net_DIME_Message {
 
     var $record_size = 4096;
     var $parts = array();
