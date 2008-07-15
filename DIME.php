@@ -58,10 +58,6 @@ define('NET_DIME_DATA', 8);
  * @see        Net_DIME_Message
  * @link       http://pear.php.net/package/Net_DIME
  * @link       http://www.ietf.org/internet-drafts/draft-nielsen-dime-02.txt
- * @todo       - Lots of stuff needs to be tested.
- *             - Definitily have to go through DIME spec and make things work
- *               right, most importantly, sec 3.3.
- *             - Make examples, document.
  */
 class Net_DIME_Record {
 
@@ -294,7 +290,7 @@ class Net_DIME_Record {
         if (!$this->_haveOpts) {
             $have = strlen($this->Elements[NET_DIME_OPTS]);
             $this->Elements[NET_DIME_OPTS] .= substr($data, $p, $this->Elements[NET_DIME_OPTS_LEN] - $have);
-            $this->_haveOpts = strlen($this->Elements[NET_DIME_OPTS]) == $this->Elements[NET_DIME_OTPS_LEN];
+            $this->_haveOpts = strlen($this->Elements[NET_DIME_OPTS]) == $this->Elements[NET_DIME_OPTS_LEN];
             if (!$this->_haveOpts) {
                 return null;
             }
@@ -347,7 +343,7 @@ class Net_DIME_Record {
  * @link       http://www.ietf.org/internet-drafts/draft-nielsen-dime-02.txt
  * @example    test/dime_message_test.php For example of usage.
  * @todo       - Lots of stuff needs to be tested.
- *             - Definitily have to go through DIME spec and make things work
+ *             - Definitely have to go through DIME spec and make things work
  *               right, most importantly, sec 3.3.
  *             - Make examples, document.
  */
