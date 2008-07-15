@@ -6,7 +6,7 @@ http://pear.php.net/dtd/package-2.0.xsd">
  <name>Net_DIME</name>
  <channel>pear.php.net</channel>
  <summary>The Net_DIME package implements DIME encoding</summary>
- <description>The Net_DIME package provides an implementation of DIME as defined at http://search.ietf.org/internet-drafts/draft-nielsen-dime-02.txt</description>
+ <description>The Net_DIME package provides an implementation of DIME as defined at http://xml.coverpages.org/draft-nielsen-dime-02.txt</description>
  <lead>
   <name>Jan Schneider</name>
   <user>yunosh</user>
