@@ -19,18 +19,17 @@ http://pear.php.net/dtd/package-2.0.xsd">
   <email>shane@caraveo.com</email>
   <active>no</active>
  </lead>
- <date>2008-07-15</date>
+ <date>2008-08-24</date>
  <version>
-  <release>1.0.0RC1</release>
-  <api>1.0.0RC1</api>
+  <release>1.0.0</release>
+  <api>1.0.0</api>
  </version>
  <stability>
-  <release>beta</release>
-  <api>beta</api>
+  <release>stable</release>
+  <api>stable</api>
  </stability>
- <license uri="http://www.php.net/license">PHP License</license>
- <notes>Fixed a constant name typo (Aaron Nixon, Bug #5537).
- </notes>
+ <license uri="http://www.opensource.org/licenses/bsd-license.php">BSD License</license>
+ <notes>Switched license to BSD License.</notes>
  <contents>
   <dir name="/">
    <dir name="test">
@@ -52,6 +51,20 @@ http://pear.php.net/dtd/package-2.0.xsd">
  </dependencies>
  <phprelease />
  <changelog>
+  <release>
+   <date>2008-07-15</date>
+   <version>
+    <release>1.0.0RC1</release>
+    <api>1.0.0RC1</api>
+   </version>
+   <stability>
+    <release>beta</release>
+    <api>beta</api>
+   </stability>
+   <license uri="http://www.php.net/license">PHP License</license>
+   <notes>Fixed a constant name typo (Aaron Nixon, Bug #5537).
+   </notes>
+  </release>
   <release>
    <version>
     <release>0.3</release>

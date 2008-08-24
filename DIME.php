@@ -5,19 +5,39 @@
  *
  * PHP versions 4 and 5
  *
- * LICENSE: This source file is subject to version 3.01 of the PHP license
- * that is available through the world-wide-web at the following URI:
- * http://www.php.net/license/3_01.txt.  If you did not receive a copy of
- * the PHP License and are unable to obtain it through the web, please
- * send a note to license@php.net so we can mail you a copy immediately.
- *
+ * Copyright (c) 2002-2007 The PHP Group
+ * All rights reserved.
+ * 
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ * 
+ * 1. Redistributions of source code must retain the above copyright notice,
+ *    this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ *    this list of conditions and the following disclaimer in the documentation
+ *    and/or other materials provided with the distribution.
+ * 3. The name of the authors may not be used to endorse or promote products
+ *    derived from this software without specific prior written permission.
+ * 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
+ * 
  * @category   Networking
  * @package    Net_DIME
  * @author     Shane Caraveo <shane@caraveo.com>
  * @author     Ralf Hofmann <ralf.hofmann@verdisoft.com>
  * @author     Jan Schneider <jan@horde.org>
  * @copyright  2002-2007 The PHP Group
- * @license    http://www.php.net/license/3_01.txt  PHP License 3.01
+ * @license    http://www.opensource.org/licenses/bsd-license.php BSD License
  * @link       http://pear.php.net/package/Net_DIME
  * @example    test/dime_record_test.php For example of usage.
  */
@@ -54,7 +74,7 @@ define('NET_DIME_DATA', 8);
  * @author     Ralf Hofmann <ralf.hofmann@verdisoft.com>
  * @author     Jan Schneider <jan@horde.org>
  * @copyright  2002-2007 The PHP Group
- * @license    http://www.php.net/license/3_01.txt  PHP License 3.01
+ * @license    http://www.opensource.org/licenses/bsd-license.php BSD License
  * @see        Net_DIME_Message
  * @link       http://pear.php.net/package/Net_DIME
  * @link       http://www.ietf.org/internet-drafts/draft-nielsen-dime-02.txt
@@ -337,7 +357,7 @@ class Net_DIME_Record {
  * @author     Ralf Hofmann <ralf.hofmann@verdisoft.com>
  * @author     Jan Schneider <jan@horde.org>
  * @copyright  2002-2007 The PHP Group
- * @license    http://www.php.net/license/3_01.txt  PHP License 3.01
+ * @license    http://www.opensource.org/licenses/bsd-license.php BSD License
  * @see        Net_DIME_Message
  * @link       http://pear.php.net/package/Net_DIME
  * @link       http://www.ietf.org/internet-drafts/draft-nielsen-dime-02.txt
