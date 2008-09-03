@@ -594,7 +594,7 @@ class Net_DIME_Message {
     /**
      * Creates Net_DIME_Records from provided data.
      */
-    function _processData($data)
+    function _processData(&$data)
     {
         $leftover = null;
         if (!$this->_currentRecord) {
@@ -648,7 +648,7 @@ class Net_DIME_Message {
     /**
      * Decodes a DIME encode string of data.
      */
-    function decodeData($data)
+    function decodeData(&$data)
     {
         while (strlen($data) >= NET_DIME_RECORD_HEADER) {
             $err = $this->_processData($data);
