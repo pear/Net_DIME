@@ -19,9 +19,9 @@ http://pear.php.net/dtd/package-2.0.xsd">
   <email>shane@caraveo.com</email>
   <active>no</active>
  </lead>
- <date>2008-08-24</date>
+ <date>2008-09-03</date>
  <version>
-  <release>1.0.0</release>
+  <release>1.0.1</release>
   <api>1.0.0</api>
  </version>
  <stability>
@@ -29,7 +29,7 @@ http://pear.php.net/dtd/package-2.0.xsd">
   <api>stable</api>
  </stability>
  <license uri="http://www.opensource.org/licenses/bsd-license.php">BSD License</license>
- <notes>Switched license to BSD License.</notes>
+ <notes>Fixed message decoding (Bug #14590).</notes>
  <contents>
   <dir name="/">
    <dir name="test">
@@ -51,6 +51,19 @@ http://pear.php.net/dtd/package-2.0.xsd">
  </dependencies>
  <phprelease />
  <changelog>
+  <release>
+   <date>2008-08-24</date>
+   <version>
+    <release>1.0.0</release>
+    <api>1.0.0</api>
+   </version>
+   <stability>
+    <release>stable</release>
+    <api>stable</api>
+   </stability>
+   <license uri="http://www.opensource.org/licenses/bsd-license.php">BSD License</license>
+   <notes>Switched license to BSD License.</notes>
+  </release>
   <release>
    <date>2008-07-15</date>
    <version>
