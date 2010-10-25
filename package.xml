@@ -1,8 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<package packagerversion="1.5.1" version="2.0" xmlns="http://pear.php.net/dtd/package-2.0" xmlns:tasks="http://pear.php.net/dtd/tasks-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://pear.php.net/dtd/tasks-1.0
-http://pear.php.net/dtd/tasks-1.0.xsd
-http://pear.php.net/dtd/package-2.0
-http://pear.php.net/dtd/package-2.0.xsd">
+<package packagerversion="1.9.1" version="2.0" xmlns="http://pear.php.net/dtd/package-2.0" xmlns:tasks="http://pear.php.net/dtd/tasks-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://pear.php.net/dtd/tasks-1.0 http://pear.php.net/dtd/tasks-1.0.xsd http://pear.php.net/dtd/package-2.0 http://pear.php.net/dtd/package-2.0.xsd">
  <name>Net_DIME</name>
  <channel>pear.php.net</channel>
  <summary>The Net_DIME package implements DIME encoding and decoding</summary>
@@ -19,9 +16,10 @@ http://pear.php.net/dtd/package-2.0.xsd">
   <email>shane@caraveo.com</email>
   <active>no</active>
  </lead>
- <date>2008-09-03</date>
+ <date>2010-10-25</date>
+ <time>23:08:13</time>
  <version>
-  <release>1.0.1</release>
+  <release>1.0.2</release>
   <api>1.0.0</api>
  </version>
  <stability>
@@ -29,15 +27,15 @@ http://pear.php.net/dtd/package-2.0.xsd">
   <api>stable</api>
  </stability>
  <license uri="http://www.opensource.org/licenses/bsd-license.php">BSD License</license>
- <notes>Fixed message decoding (Bug #14590).</notes>
+ <notes>
+Automatically built QA release
+ </notes>
  <contents>
-  <dir name="/">
-   <dir name="test">
-    <file baseinstalldir="Net" name="dime_message_test.php" role="test" />
-    <file baseinstalldir="Net" name="dime_record_test.php" role="test" />
-   </dir> <!-- //test -->
-   <file baseinstalldir="Net" name="DIME.php" role="php" />
-  </dir> <!-- / -->
+  <dir baseinstalldir="Net" name="/">
+   <file baseinstalldir="Net" md5sum="ee737b13682d6e524ad702c556784b16" name="test/dime_message_test.php" role="test" />
+   <file baseinstalldir="Net" md5sum="fe97c5c8b45a77fb91141eb88cbdab5c" name="test/dime_record_test.php" role="test" />
+   <file baseinstalldir="Net" md5sum="dc3a751b94ce4e17bf886169ea2158dd" name="DIME.php" role="php" />
+  </dir>
  </contents>
  <dependencies>
   <required>
@@ -52,44 +50,20 @@ http://pear.php.net/dtd/package-2.0.xsd">
  <phprelease />
  <changelog>
   <release>
-   <date>2008-08-24</date>
    <version>
-    <release>1.0.0</release>
-    <api>1.0.0</api>
-   </version>
-   <stability>
-    <release>stable</release>
-    <api>stable</api>
-   </stability>
-   <license uri="http://www.opensource.org/licenses/bsd-license.php">BSD License</license>
-   <notes>Switched license to BSD License.</notes>
-  </release>
-  <release>
-   <date>2008-07-15</date>
-   <version>
-    <release>1.0.0RC1</release>
-    <api>1.0.0RC1</api>
+    <release>0.2</release>
+    <api>0.2</api>
    </version>
    <stability>
     <release>beta</release>
     <api>beta</api>
    </stability>
+   <date>2002-05-12</date>
    <license uri="http://www.php.net/license">PHP License</license>
-   <notes>Fixed a constant name typo (Aaron Nixon, Bug #5537).
-   </notes>
-  </release>
-  <release>
-   <version>
-    <release>0.3</release>
-    <api>0.3</api>
-   </version>
-   <stability>
-    <release>beta</release>
-    <api>beta</api>
-   </stability>
-   <date>2002-07-07</date>
-   <license uri="http://www.php.net/license">PHP License</license>
-   <notes>Updated support for the DIME spec from 17 June 2002
+   <notes>
+Some of the code probably needs to be PEAR-ified a bit more.
+This needs to be integrated with streams, if there is anything needed to do that.
+More testing needs to be done, but it encodes/decodes it&apos;s own messages.
    </notes>
   </release>
   <release>
@@ -103,23 +77,68 @@ http://pear.php.net/dtd/package-2.0.xsd">
    </stability>
    <date>2002-05-12</date>
    <license uri="http://www.php.net/license">PHP License</license>
-   <notes>Change names from DIME_* to Net_DIME_*.
+   <notes>
+Change names from DIME_* to Net_DIME_*.
    </notes>
   </release>
   <release>
    <version>
-    <release>0.2</release>
-    <api>0.2</api>
+    <release>0.3</release>
+    <api>0.3</api>
    </version>
    <stability>
     <release>beta</release>
     <api>beta</api>
    </stability>
-   <date>2002-05-12</date>
+   <date>2002-07-07</date>
    <license uri="http://www.php.net/license">PHP License</license>
-   <notes>Some of the code probably needs to be PEAR-ified a bit more.
-This needs to be integrated with streams, if there is anything needed to do that.
-More testing needs to be done, but it encodes/decodes it&apos;s own messages.
+   <notes>
+Updated support for the DIME spec from 17 June 2002
+   </notes>
+  </release>
+  <release>
+   <date>2008-07-15</date>
+   <version>
+    <release>1.0.0RC1</release>
+    <api>1.0.0RC1</api>
+   </version>
+   <stability>
+    <release>beta</release>
+    <api>beta</api>
+   </stability>
+   <license uri="http://www.php.net/license">PHP License</license>
+   <notes>
+Fixed a constant name typo (Aaron Nixon, Bug #5537).
+   </notes>
+  </release>
+  <release>
+   <date>2008-08-24</date>
+   <version>
+    <release>1.0.0</release>
+    <api>1.0.0</api>
+   </version>
+   <stability>
+    <release>stable</release>
+    <api>stable</api>
+   </stability>
+   <license uri="http://www.opensource.org/licenses/bsd-license.php">BSD License</license>
+   <notes>
+Switched license to BSD License.
+   </notes>
+  </release>
+  <release>
+   <version>
+    <release>1.0.2</release>
+    <api>1.0.0</api>
+   </version>
+   <stability>
+    <release>stable</release>
+    <api>stable</api>
+   </stability>
+   <date>2010-10-25</date>
+   <license uri="http://www.opensource.org/licenses/bsd-license.php">BSD License</license>
+   <notes>
+Automatically built QA release
    </notes>
   </release>
  </changelog>
