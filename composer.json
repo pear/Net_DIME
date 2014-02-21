@@ -1,0 +1,33 @@
+{
+    "authors": [
+        {
+            "email": "jan@horde.org",
+            "name": "Jan Schneider",
+            "role": "Lead"
+        },
+        {
+            "email": "shane@caraveo.com",
+            "name": "Shane Caraveo",
+            "role": "Lead"
+        }
+    ],
+    "autoload": {
+        "classmap": [
+            "./"
+        ]
+    },
+    "description": "More info available on: http://pear.php.net/package/Net_DIME",
+    "license": "BSD License",
+    "name": "pear/net_dime",
+    "support": {
+        "issues": "http://pear.php.net/bugs/search.php?cmd=display&package_name[]=Net_DIME",
+        "source": "https://github.com/pear/Net_DIME"
+    },
+    "type": "library",
+    "require": {
+        "pear/pear_exception": "*"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "*"
+    }
+}
